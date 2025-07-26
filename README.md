@@ -38,7 +38,6 @@ db_name: sample_db
 db_user: user
 db_password: password
 nodejs_version: 20.x
-laravel_version: 11.*
 proxy_template_name: default.conf.templateForSSL
 ...
 ```
@@ -66,22 +65,14 @@ make container-init
 
 # コンテナ初回起動後の作業
 
-初回起動後、Nextjs プロジェクトが未作成であれば、自動的に `/var/www/html/${PROJECT_NAME}` 以下に `npx create-next-app@latest` により生成されます（install.sh スクリプトによる）。
+初回起動後、プロジェクトが未作成であれば、`/app/install.sh`を実行すると自動的に `/app/${PROJECT_NAME}` Flaskアプリのプロジェクトが自動生成されます。
 
-MySQL コンテナ起動時には以下の SQL が実行され、開発用とテスト用の2つのDBが作成されます
-
-```sql
--- 本番用データベースの作成
-CREATE DATABASE IF NOT EXISTS `{{ project_name }}_db` ...
-
--- テスト用データベースの作成
-CREATE DATABASE IF NOT EXISTS `{{ project_name }}_db_test` ...
-```
+コンテナ起動時には`ansible/.devcontainer/db/init/init.sql` が実行され、開発用とテスト用の2つのDBが作成されます。
 
 # 開発環境URLアクセス法
 
-- Nextjs アプリ: `http://127.0.0.1:PROXY_PUBLIC_PORT/`
-- PhpMyAdmin: `http://127.0.0.1:PHP_MYADMIN_PUBLIC_PORT/`
+- Flask アプリ: `https://127.0.0.1:PROXY_PUBLIC_PORT/`
+- Adminer: `http://127.0.0.1:ADMINER_PUBLIC_PORT/`
 
 
 # Makeコマンド
