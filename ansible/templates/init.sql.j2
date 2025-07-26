@@ -1,0 +1,11 @@
+-- ユーザー作成（存在しない場合）
+DO
+$$
+BEGIN
+    IF NOT EXISTS (
+        SELECT FROM pg_roles WHERE rolname = '{{ db_user }}'
+    ) THEN
+        CREATE USER "{{ db_user }}" WITH PASSWORD '{{ db_password }}';
+    END IF;
+END
+$$;

@@ -1,0 +1,36 @@
+server {
+    listen       80;
+    server_name ${HOSTNAME}; 
+    client_max_body_size 2m;
+
+    access_log /dev/stdout;
+    error_log  /dev/stderr;
+
+    # 静的ファイルを生成する場合は、Next.js index.htmlが配置されるフォルダのパス 
+    # root   /var/www/html/${PROJECT_NAME}/out;
+
+    # nodejs利用。 動的の場合は以下
+    root /var/www/html/${PROJECT_NAME}/.next;
+
+	# 静的ファイルを配置する場合は下記を設定
+    # location / {
+    #    index  index.html index.htm;
+    # }
+
+	# node jsを利用する場合は下記で設定
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://app:3000;  # Next.jsアプリの実行ポートに合わせて設定
+    } 
+
+    # WebSocketの設定
+    location /ws/ {
+        proxy_pass http://app:3005; # WebSocketのnodeコンテナポート
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
